@@ -39,6 +39,7 @@ override_dh_auto_test:
 # having to run go generate in 2 different locations and it still complains
 # about a missing definition in an export_for_test.go file.
 vet:
+	go env -w GO111MODULE=off
 	if go doc cmd/vet >/dev/null 2>&1; then \
 		cd $(CURDIR)/$(GOBUILDDIR)/src/github.com/danos/yang/xpath/grammars/expr; \
 		go generate;cd -; \
