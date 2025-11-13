@@ -116,7 +116,8 @@ func NewNodeNotExistsError(path []string) error {
 
 func NewNodeExistsError(path []string) error {
 	e := mgmterror.NewDataExistsError()
-	e.Path = pathutil.Pathstr(path)
-	e.Message = "Node exists"
+	pathStr := pathutil.Pathstr(path)
+	e.Path = pathStr
+	e.Message = "Node exists: " + pathStr
 	return e
 }
