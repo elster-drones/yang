@@ -386,6 +386,12 @@ func substring(ctx *context, args []Datum) (retLit Datum) {
 	num1 := args[1].Number("substring()")
 	num2 := args[2].Number("substring()")
 
+	// XPath 1.0: a NaN start or length yields the empty string. Converting
+	// NaN to int is not the same on every architecture, so test it first.
+	if math.IsNaN(num1) || math.IsNaN(num2) {
+		return NewLiteralDatum("")
+	}
+
 	substrLen := len(lit0)
 	if substrLen == 0 {
 		return NewLiteralDatum("")
