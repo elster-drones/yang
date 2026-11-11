@@ -507,8 +507,19 @@ func (progBldr *ProgBuilder) Mul(ctx *context) {
 func (progBldr *ProgBuilder) Div(ctx *context) {
 	denom := ctx.popNumber("div (denominator)")
 	numer := ctx.popNumber("div (numerator)")
+	// XPath 1.0: 0 div 0 is NaN. A non-zero number divided by zero is
+	// signed infinity. Treating every zero denominator as +Inf makes
+	// int(+Inf) differ by architecture, so substring() then disagrees.
 	if denom == 0.0 {
-		ctx.pushDatum(NewNumDatum(math.Inf(1)))
+		if numer == 0.0 || math.IsNaN(numer) {
+			ctx.pushDatum(NewNumDatum(math.NaN()))
+			return
+		}
+		sign := 1
+		if numer < 0 {
+			sign = -1
+		}
+		ctx.pushDatum(NewNumDatum(math.Inf(sign)))
 		return
 	}
 	ctx.pushDatum(NewNumDatum(numer / denom))
